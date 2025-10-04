@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randomized Quick Sort for CRM Systems</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --accent-color: #e74c3c;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        h3 {
+            color: var(--dark-color);
+            margin: 20px 0 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        textarea, input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        textarea:focus, input[type="text"]:focus, input[type="file"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--primary-color);
+            display: none;
+        }
+        
+        .error-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #fde8e8;
+            border-left: 4px solid var(--accent-color);
+            color: #c0392b;
+            display: none;
+        }
+        
+        .download-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .download-link:hover {
+            background-color: #27ae60;
+        }
+        
+        /* Educational Section */
+        .educational-section {
+            margin-top: 50px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+        }
+        
+        .concept-box {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-left: 5px solid var(--primary-color);
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        
+        .complexity-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .complexity-table th, .complexity-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .complexity-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .complexity-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .code-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 0;
+        }
+        
+        .code-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            margin-right: 5px;
+            transition: var(--transition);
+        }
+        
+        .code-tab.active {
+            background-color: #282c34;
+            color: white;
+            border-color: #282c34;
+        }
+        
+        .code-content {
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #282c34;
+            color: #abb2bf;
+            border-radius: 0 4px 4px 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+        
+        .code-keyword {
+            color: #c678dd;
+        }
+        
+        .code-function {
+            color: #61afef;
+        }
+        
+        .code-string {
+            color: #98c379;
+        }
+        
+        .code-comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+        
+        .code-number {
+            color: #d19a66;
+        }
+        
+        .visualization {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .step {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .tip-box {
+            background-color: #fff8e1;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .icon {
+            display: inline-block;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Randomized Quick Sort for CRM Systems</h1>
+        <p class="subtitle">Preventing worst-case performance with random pivot selection</p>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Option 1: Manual Name Sorting</h2>
+            <p>Enter customer names separated by commas to see how Randomized Quick Sort organizes them alphabetically.</p>
+            
+            <form id="manual-form">
+                <div class="form-group">
+                    <label for="customer_names">Customer Names (Comma-Separated):</label>
+                    <textarea id="customer_names" name="customer_names" rows="4" placeholder="e.g., John, Alice, Bob, Zoe, aaron">Uday Patil, Jinendra Gavit, Ganesh Pawar, Rohit Sharma, Virat Kohli</textarea>
+                </div>
+                <button type="submit" class="btn-success" id="manual-sort-button">
+                    <span class="icon">🔄</span> Sort Names with Randomized Quick Sort
+                </button>
+            </form>
+            
+            <div id="manual-result-box" class="result-box">
+                <h3>Sorted Results:</h3>
+                <div id="sorted-output"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Option 2: Excel File Sorting</h2>
+            <p>Upload an Excel file containing customer data and specify which column to sort alphabetically.</p>
+            
+            <form id="excel-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="excel_file">Select Excel File (.xlsx/.xls):</label>
+                    <input type="file" id="excel_file" name="excel_file" accept=".xlsx, .xls" required>
+                </div>
+                <div class="form-group">
+                    <label for="sort_column_name">Name of Column to Sort:</label>
+                    <input type="text" id="sort_column_name" name="sort_column_name" placeholder="e.g., First Name, Middle Name, First Name" required>
+                </div>
+                <button type="submit" class="btn-primary" id="excel-sort-button">
+                    <span class="icon">📊</span> Sort Excel Data
+                </button>
+            </form>
+            
+            <div id="excel-result-box" class="result-box">
+                <p id="excel-status-message"></p>
+                <a id="download-link" href="#" class="download-link" style="display: none;">
+                    <span class="icon">⬇️</span> Download Sorted Excel File
+                </a>
+            </div>
+            
+            <div id="excel-error-box" class="error-box"></div>
+        </div>
+    </div>
+    
+    <div class="educational-section">
+        <h2>Understanding Randomized Quick Sort</h2>
+        
+        <div class="concept-box">
+            <h3>Why Use Randomized Quick Sort in CRM Systems?</h3>
+            <p>Customer Relationship Management (CRM) systems often need to sort customer data. When this data arrives partially sorted (by date, previous sorting, etc.), traditional Quick Sort can become very slow.</p>
+            <p>Randomized Quick Sort solves this by randomly selecting pivot elements, ensuring that the algorithm performs well on average, regardless of the initial order of data.</p>
+        </div>
+        
+        <div class="tip-box">
+            <p><strong>💡 Key Insight:</strong> By making the pivot selection random, we prevent the worst-case scenario where the data is already sorted, which would make standard Quick Sort very inefficient.</p>
+        </div>
+        
+        <h3>How Randomized Quick Sort Works</h3>
+        
+        <div class="visualization">
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Select a Random Pivot:</strong> Instead of always picking the first or last element, we randomly select an element from the current segment of the array.
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Partition the Array:</strong> Rearrange the array so that all elements smaller than the pivot come before it, and all elements greater come after it.
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Recursively Sort:</strong> Apply the same process to the sub-arrays on both sides of the pivot.
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Repeat:</strong> Continue this process until the entire array is sorted.
+            </div>
+        </div>
+        
+        <h3>Time Complexity Comparison</h3>
+        <table class="complexity-table">
+            <thead>
+                <tr>
+                    <th>Algorithm</th>
+                    <th>Best Case</th>
+                    <th>Average Case</th>
+                    <th>Worst Case</th>
+                    <th>Space Complexity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Standard Quick Sort</strong></td>
+                    <td>O(n log n)</td>
+                    <td>O(n log n)</td>
+                    <td>O(n²) - when data is sorted</td>
+                    <td>O(log n)</td>
+                </tr>
+                <tr>
+                    <td><strong>Randomized Quick Sort</strong></td>
+                    <td>O(n log n)</td>
+                    <td>O(n log n)</td>
+                    <td>O(n log n) - with high probability</td>
+                    <td>O(log n)</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>Implementation in Different Languages</h3>
+        
+        
+        <div class="code-tabs">
+            <div class="code-tab active" data-lang="python">Python</div>
+            <div class="code-tab" data-lang="java">Java</div>
+             <div class="code-tab" data-lang="c">C</div>
+        </div>
+        
+        <div id="code-output" class="code-content">
+            <pre data-lang="python">
+<span class="code-keyword">import</span> random
+
+<span class="code-keyword">def</span> <span class="code-function">randomized_quick_sort</span>(data, low, high):
+    <span class="code-comment"># Base case: if the segment has more than one element</span>
+    <span class="code-keyword">if</span> low < high:
+        <span class="code-comment"># Get a random partition index</span>
+        p = randomized_partition(data, low, high)
+        <span class="code-comment"># Recursively sort elements before and after partition</span>
+        randomized_quick_sort(data, low, p - <span class="code-number">1</span>)
+        randomized_quick_sort(data, p + <span class="code-number">1</span>, high)
+
+<span class="code-keyword">def</span> <span class="code-function">randomized_partition</span>(data, low, high):
+    <span class="code-comment"># Select a random index between low and high</span>
+    random_index = random.randint(low, high)
+    <span class="code-comment"># Swap the random element with the last element</span>
+    data[random_index], data[high] = data[high], data[random_index]
+    <span class="code-comment"># Now partition using the last element as pivot</span>
+    <span class="code-keyword">return</span> partition(data, low, high)
+
+<span class="code-keyword">def</span> <span class="code-function">partition</span>(data, low, high):
+    <span class="code-comment"># Use the last element as pivot (after randomization)</span>
+    pivot = data[high].lower()  <span class="code-comment"># Case-insensitive comparison</span>
+    i = low - <span class="code-number">1</span>  <span class="code-comment"># Index of smaller element</span>
+    
+    <span class="code-keyword">for</span> j <span class="code-keyword">in</span> range(low, high):
+        <span class="code-comment"># If current element is smaller than or equal to pivot</span>
+        <span class="code-keyword">if</span> data[j].lower() <= pivot:
+            i += <span class="code-number">1</span>
+            <span class="code-comment"># Swap elements at i and j</span>
+            data[i], data[j] = data[j], data[i]
+    
+    <span class="code-comment"># Place the pivot in its correct position</span>
+    data[i + <span class="code-number">1</span>], data[high] = data[high], data[i + <span class="code-number">1</span>]
+    <span class="code-keyword">return</span> i + <span class="code-number">1</span>
+            </pre>
+            
+            <pre data-lang="java" style="display: none;">
+<span class="code-keyword">import</span> java.util.Random;
+
+<span class="code-keyword">public class</span> RandomizedQuickSort {
+    
+    <span class="code-keyword">public static void</span> <span class="code-function">randomizedQuickSort</span>(String[] data, <span class="code-keyword">int</span> low, <span class="code-keyword">int</span> high) {
+        <span class="code-comment">// Base case</span>
+        <span class="code-keyword">if</span> (low < high) {
+            <span class="code-comment">// Get random partition index</span>
+            <span class="code-keyword">int</span> p = randomizedPartition(data, low, high);
+            <span class="code-comment">// Recursively sort elements before and after partition</span>
+            randomizedQuickSort(data, low, p - 1);
+            randomizedQuickSort(data, p + 1, high);
+        }
+    }
+    
+    <span class="code-keyword">private static int</span> <span class="code-function">randomizedPartition</span>(String[] data, <span class="code-keyword">int</span> low, <span class="code-keyword">int</span> high) {
+        <span class="code-comment">// Create random number generator</span>
+        Random rand = <span class="code-keyword">new</span> Random();
+        <span class="code-comment">// Generate random index between low and high</span>
+        <span class="code-keyword">int</span> randomIndex = low + rand.nextInt(high - low + 1);
+        
+        <span class="code-comment">// Swap the random element with the last element</span>
+        String temp = data[randomIndex];
+        data[randomIndex] = data[high];
+        data[high] = temp;
+        
+        <span class="code-comment">// Now call the standard partition method</span>
+        <span class="code-keyword">return</span> partition(data, low, high);
+    }
+    
+    <span class="code-keyword">private static int</span> <span class="code-function">partition</span>(String[] data, <span class="code-keyword">int</span> low, <span class="code-keyword">int</span> high) {
+        String pivot = data[high].toLowerCase(); <span class="code-comment">// Case-insensitive comparison</span>
+        <span class="code-keyword">int</span> i = low - 1; <span class="code-comment">// Index of smaller element</span>
+        
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> j = low; j < high; j++) {
+            <span class="code-comment">// If current element is smaller than or equal to pivot</span>
+            <span class="code-keyword">if</span> (data[j].toLowerCase().compareTo(pivot) <= 0) {
+                i++;
+                <span class="code-comment">// Swap data[i] and data[j]</span>
+                String temp = data[i];
+                data[i] = data[j];
+                data[j] = temp;
+            }
+        }
+        
+        <span class="code-comment">// Swap data[i+1] and data[high] (or pivot)</span>
+        String temp = data[i + 1];
+        data[i + 1] = data[high];
+        data[high] = temp;
+        
+        <span class="code-keyword">return</span> i + 1;
+    }
+}
+            </pre>
+
+            <pre data-lang="c" style="display: none;">
+<span class="code-keyword">#include</span> <span class="code-string">&lt;stdio.h&gt;</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;stdlib.h&gt;</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;string.h&gt;</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;time.h&gt;</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;ctype.h&gt;</span>
+
+<span class="code-comment">// Function to swap two strings</span>
+<span class="code-keyword">void</span> <span class="code-function">swap</span>(<span class="code-keyword">char</span> **a, <span class="code-keyword">char</span> **b) {
+    <span class="code-keyword">char</span> *temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+<span class="code-comment">// Convert to lowercase for case-insensitive comparison</span>
+<span class="code-keyword">void</span> <span class="code-function">toLowerCase</span>(<span class="code-keyword">char</span> *str) {
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; str[i]; i++) {
+        str[i] = tolower((<span class="code-keyword">unsigned char</span>)str[i]);
+    }
+}
+
+<span class="code-comment">// Partition the array around a pivot</span>
+<span class="code-keyword">int</span> <span class="code-function">partition</span>(<span class="code-keyword">char</span> **arr, <span class="code-keyword">int</span> low, <span class="code-keyword">int</span> high) {
+    <span class="code-comment">// Create copy for case-insensitive comparison</span>
+    <span class="code-keyword">char</span> *pivot = malloc(strlen(arr[high]) + <span class="code-number">1</span>);
+    strcpy(pivot, arr[high]);
+    toLowerCase(pivot);
+    
+    <span class="code-keyword">int</span> i = low - <span class="code-number">1</span>;
+
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> j = low; j < high; j++) {
+        <span class="code-comment">// Create copy for comparison</span>
+        <span class="code-keyword">char</span> *current = malloc(strlen(arr[j]) + <span class="code-number">1</span>);
+        strcpy(current, arr[j]);
+        toLowerCase(current);
+        
+        <span class="code-comment">// Compare case-insensitively</span>
+        <span class="code-keyword">if</span> (strcmp(current, pivot) <= <span class="code-number">0</span>) {
+            i++;
+            swap(&arr[i], &arr[j]);
+        }
+        free(current);
+    }
+    
+    swap(&arr[i + <span class="code-number">1</span>], &arr[high]);
+    free(pivot);
+    <span class="code-keyword">return</span> i + <span class="code-number">1</span>;
+}
+
+<span class="code-comment">// Randomized partition - core of the algorithm</span>
+<span class="code-keyword">int</span> <span class="code-function">randomizedPartition</span>(<span class="code-keyword">char</span> **arr, <span class="code-keyword">int</span> low, <span class="code-keyword">int</span> high) {
+    <span class="code-comment">// Seed random number generator</span>
+    srand(time(NULL));
+    <span class="code-comment">// Generate random index between low and high</span>
+    <span class="code-keyword">int</span> randomIndex = low + rand() % (high - low + <span class="code-number">1</span>);
+    
+    <span class="code-comment">// Swap random element with last element</span>
+    swap(&arr[randomIndex], &arr[high]);
+    
+    <span class="code-comment">// Call standard partition</span>
+    <span class="code-keyword">return</span> partition(arr, low, high);
+}
+
+<span class="code-comment">// Main Randomized Quick Sort function</span>
+<span class="code-keyword">void</span> <span class="code-function">randomizedQuickSort</span>(<span class="code-keyword">char</span> **arr, <span class="code-keyword">int</span> low, <span class="code-keyword">int</span> high) {
+    <span class="code-keyword">if</span> (low < high) {
+        <span class="code-comment">// Get random partition index</span>
+        <span class="code-keyword">int</span> pi = randomizedPartition(arr, low, high);
+        
+        <span class="code-comment">// Recursively sort both partitions</span>
+        randomizedQuickSort(arr, low, pi - <span class="code-number">1</span>);
+        randomizedQuickSort(arr, pi + <span class="code-number">1</span>, high);
+    }
+}
+</pre>
+        </div>
+        
+        <div class="tip-box">
+            <p><strong>🎯 Real-World Application:</strong> This implementation is particularly useful in CRM systems where customer names need to be sorted alphabetically, regardless of their original order in the database.</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025. Developed and maintained by Uday Patil. | Contact: uday64757@gmail.com</p>
+        <p>This application is free for public use and educational purposes.</p>
+    </footer>
+
+    <script>
+        // --- Code Tab Switching Logic ---
+        document.querySelectorAll('.code-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.code-content pre').forEach(code => code.style.display = 'none');
+                
+                tab.classList.add('active');
+                
+                const lang = tab.getAttribute('data-lang');
+                document.querySelector(`.code-content pre[data-lang="${lang}"]`).style.display = 'block';
+            });
+        });
+
+        // Initialize to show Python code
+        document.querySelector('.code-tab[data-lang="python"]').click();
+
+        // --- Manual Sort Handler ---
+        document.getElementById('manual-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const statusBox = document.getElementById('manual-result-box');
+            const outputDiv = document.getElementById('sorted-output');
+            const sortButton = document.getElementById('manual-sort-button');
+
+            sortButton.disabled = true;
+            sortButton.innerHTML = '<span class="icon">⏳</span> Sorting...';
+            statusBox.style.display = 'block';
+            outputDiv.textContent = 'Sorting in progress...';
+
+            fetch('/sort_manual', {
+                method: 'POST',
+                body: new URLSearchParams(formData) 
+            })
+            .then(response => response.json())
+            .then(data => {
+                sortButton.disabled = false;
+                sortButton.innerHTML = '<span class="icon">🔄</span> Sort Names with Randomized Quick Sort';
+                outputDiv.textContent = data.sorted_names;
+            })
+            .catch(error => {
+                sortButton.disabled = false;
+                sortButton.innerHTML = '<span class="icon">🔄</span> Sort Names with Randomized Quick Sort';
+                outputDiv.textContent = 'Error: Could not sort names. Please try again.';
+                console.error('Error:', error);
+            });
+        });
+
+        // --- Excel Sort Handler ---
+        document.getElementById('excel-form').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            const formData = new FormData(e.target);
+            const resultBox = document.getElementById('excel-result-box');
+            const errorBox = document.getElementById('excel-error-box');
+            const statusMsg = document.getElementById('excel-status-message');
+            const downloadLink = document.getElementById('download-link');
+            const sortButton = document.getElementById('excel-sort-button');
+
+            sortButton.disabled = true;
+            sortButton.innerHTML = '<span class="icon">⏳</span> Processing...';
+            resultBox.style.display = 'block';
+            errorBox.style.display = 'none';
+            statusMsg.textContent = 'Processing your Excel file...';
+            downloadLink.style.display = 'none';
+
+            fetch('/upload_and_sort', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                sortButton.disabled = false;
+                sortButton.innerHTML = '<span class="icon">📊</span> Sort Excel Data';
+                
+                if (data.success) {
+                    statusMsg.textContent = data.message;
+                    downloadLink.href = `/download/${data.download_filename}`;
+                    downloadLink.style.display = 'inline-block';
+                    resultBox.style.borderLeftColor = '#2ecc71';
+                    resultBox.style.backgroundColor = '#e8f8f0';
+                } else {
+                    statusMsg.textContent = 'Sorting Failed';
+                    errorBox.textContent = data.error;
+                    errorBox.style.display = 'block';
+                    resultBox.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                sortButton.disabled = false;
+                sortButton.innerHTML = '<span class="icon">📊</span> Sort Excel Data';
+                errorBox.textContent = 'A network error occurred. Please check your connection and try again.';
+                errorBox.style.display = 'block';
+                resultBox.style.display = 'none';
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
