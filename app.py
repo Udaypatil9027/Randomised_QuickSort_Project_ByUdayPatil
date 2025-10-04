@@ -1,14 +1,15 @@
 import random
 import io
 import pandas as pd
+import tempfile
+import os
 from flask import Flask, render_template, request, jsonify, send_file
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 
-# Global variable to hold the sorted file data in memory for download
-SORTED_EXCEL_DATA = None 
+# Remove the global variable - we'll use temporary files instead
 
 # --- I. Randomized Quick Sort Algorithm (for Manual Input) ---
 
@@ -75,7 +76,6 @@ def sort_manual():
 @app.route('/upload_and_sort', methods=['POST'])
 def upload_and_sort():
     """Handles the Excel file upload and sorting using Pandas."""
-    global SORTED_EXCEL_DATA
     
     if 'excel_file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
@@ -100,7 +100,7 @@ def upload_and_sort():
                     'error': f'Columns {missing_columns} not found in the sheet. Available columns: {list(df.columns)}'
                 }), 400
             
-            # NEW: Sort by multiple columns with case-insensitive comparison
+            # Sort by multiple columns with case-insensitive comparison
             if len(columns_to_sort) == 1:
                 # Single column sorting (original behavior)
                 df = df.sort_values(
@@ -128,13 +128,12 @@ def upload_and_sort():
                 # Reorder the original DataFrame
                 df = df.loc[sorted_indices].reset_index(drop=True)
             
-            # Save to an in-memory buffer
-            output = io.BytesIO()
-            with pd.ExcelWriter(output, engine='openpyxl') as writer:
-                df.to_excel(writer, index=False, sheet_name='Sorted Data')
+            # Create a temporary file to store the sorted data
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
             
-            output.seek(0)
-            SORTED_EXCEL_DATA = output  # Store in global variable
+            # Save the sorted DataFrame to the temporary file
+            with pd.ExcelWriter(temp_file.name, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False, sheet_name='Sorted Data')
             
             # Success message for single or multiple columns
             if len(columns_to_sort) == 1:
@@ -145,7 +144,8 @@ def upload_and_sort():
             return jsonify({
                 'success': True,
                 'message': message,
-                'download_filename': f"sorted_{secure_filename(file.filename)}"
+                'download_filename': f"sorted_{secure_filename(file.filename)}",
+                'temp_file_path': temp_file.name  # Send the temporary file path to frontend
             })
             
         except Exception as e:
@@ -153,20 +153,47 @@ def upload_and_sort():
     
     return jsonify({'error': 'Invalid file format. Must be .xlsx or .xls.'}), 400
 
-@app.route('/download/<filename>', methods=['GET'])
-def download(filename):
+@app.route('/download', methods=['GET'])
+def download():
     """Handles the download of the sorted Excel file."""
-    global SORTED_EXCEL_DATA
+    temp_file_path = request.args.get('file_path')
+    filename = request.args.get('filename', 'sorted_file.xlsx')
     
-    if SORTED_EXCEL_DATA:
-        return send_file(
-            SORTED_EXCEL_DATA,
+    if temp_file_path and os.path.exists(temp_file_path):
+        # Create response with file
+        response = send_file(
+            temp_file_path,
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             download_name=filename,
             as_attachment=True
         )
+        
+        # Clean up the temporary file after the response is sent
+        @response.call_on_close
+        def cleanup_temp_file():
+            try:
+                os.unlink(temp_file_path)
+            except Exception as e:
+                print(f"Error deleting temporary file: {e}")
+        
+        return response
     else:
         return "File not found or session expired.", 404
+
+# Cleanup function to remove any orphaned temporary files on startup
+@app.before_request
+def cleanup_old_temp_files():
+    """Optional: Clean up any old temporary files that might be left behind"""
+    temp_dir = tempfile.gettempdir()
+    for filename in os.listdir(temp_dir):
+        if filename.startswith('tmp') and filename.endswith('.xlsx'):
+            filepath = os.path.join(temp_dir, filename)
+            try:
+                # Delete files older than 1 hour
+                if os.path.getmtime(filepath) < (time.time() - 3600):
+                    os.unlink(filepath)
+            except:
+                pass
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

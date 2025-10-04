@@ -715,7 +715,7 @@
                 
                 if (data.success) {
                     statusMsg.textContent = data.message;
-                    downloadLink.href = `/download/${data.download_filename}`;
+                    downloadLink.href = `/download?file_path=${data.temp_file_path}&filename=${data.download_filename}`;
                     downloadLink.style.display = 'inline-block';
                     resultBox.style.borderLeftColor = '#2ecc71';
                     resultBox.style.backgroundColor = '#e8f8f0';
